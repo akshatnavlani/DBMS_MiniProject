@@ -1,0 +1,709 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0" version="28.1.1">
+  <diagram id="relational_schema" name="Film Production Relational Schema">
+    <mxGraphModel dx="3000" dy="2500" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- FILM Table -->
+        <mxCell id="film_table_title" value="&lt;font face=&quot;Garamond&quot; style=&quot;font-size: 24px;&quot;&gt;FILM&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="50" y="43" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="film_table_group" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="115" y="78" width="200" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="film_pk" value="PK: film_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=1;fillColor=#FFEBEE;" vertex="1" parent="film_table_group">
+          <mxGeometry width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="film_attr_1" value="title" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="film_table_group">
+          <mxGeometry y="20" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="film_attr_2" value="genre" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="film_table_group">
+          <mxGeometry y="40" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="film_attr_3" value="release_date" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="film_table_group">
+          <mxGeometry y="60" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="film_attr_4" value="budget" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="film_table_group">
+          <mxGeometry y="80" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="film_attr_5" value="duration" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="film_table_group">
+          <mxGeometry y="100" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="film_attr_6" value="language" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="film_table_group">
+          <mxGeometry y="120" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="film_attr_7" value="boxoffice_collection" style="whiteSpace=wrap;html=1;container=0;dashed=1;" vertex="1" parent="film_table_group">
+          <mxGeometry y="140" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="film_attr_8" value="rating" style="whiteSpace=wrap;html=1;container=0;dashed=1;" vertex="1" parent="film_table_group">
+          <mxGeometry y="160" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="film_fk_1" value="FK: director_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=4;" vertex="1" parent="film_table_group">
+          <mxGeometry y="180" width="200" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- ACTOR Table -->
+        <mxCell id="actor_table_title" value="&lt;font face=&quot;Garamond&quot; style=&quot;font-size: 24px;&quot;&gt;ACTOR&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="50" y="300" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="actor_table_group" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="115" y="335" width="200" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="actor_pk" value="PK: actor_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=1;fillColor=#FFEBEE;" vertex="1" parent="actor_table_group">
+          <mxGeometry width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="actor_attr_1" value="first_name" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="actor_table_group">
+          <mxGeometry y="20" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="actor_attr_2" value="last_name" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="actor_table_group">
+          <mxGeometry y="40" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="actor_attr_3" value="dob" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="actor_table_group">
+          <mxGeometry y="60" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="actor_attr_4" value="gender" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="actor_table_group">
+          <mxGeometry y="80" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="actor_attr_5" value="nationality" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="actor_table_group">
+          <mxGeometry y="100" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="actor_attr_6" value="age (derived)" style="whiteSpace=wrap;html=1;container=0;dashed=1;" vertex="1" parent="actor_table_group">
+          <mxGeometry y="120" width="200" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- DIRECTOR Table -->
+        <mxCell id="director_table_title" value="&lt;font face=&quot;Garamond&quot; style=&quot;font-size: 24px;&quot;&gt;DIRECTOR&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="50" y="475" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="director_table_group" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="115" y="510" width="200" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="director_pk" value="PK: director_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=1;fillColor=#FFEBEE;" vertex="1" parent="director_table_group">
+          <mxGeometry width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="director_attr_1" value="name" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="director_table_group">
+          <mxGeometry y="20" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="director_attr_2" value="dob" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="director_table_group">
+          <mxGeometry y="40" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="director_attr_3" value="gender" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="director_table_group">
+          <mxGeometry y="60" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="director_attr_4" value="nationality" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="director_table_group">
+          <mxGeometry y="80" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="director_attr_5" value="films_directed (derived)" style="whiteSpace=wrap;html=1;container=0;dashed=1;" vertex="1" parent="director_table_group">
+          <mxGeometry y="100" width="200" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- PRODUCER Table -->
+        <mxCell id="producer_table_title" value="&lt;font face=&quot;Garamond&quot; style=&quot;font-size: 24px;&quot;&gt;PRODUCER&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="50" y="660" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="producer_table_group" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="115" y="695" width="200" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="producer_pk" value="PK: producer_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=1;fillColor=#FFEBEE;" vertex="1" parent="producer_table_group">
+          <mxGeometry width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="producer_attr_1" value="name" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="producer_table_group">
+          <mxGeometry y="20" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="producer_attr_2" value="company" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="producer_table_group">
+          <mxGeometry y="40" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="producer_attr_3" value="contact" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="producer_table_group">
+          <mxGeometry y="60" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="producer_attr_4" value="email" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="producer_table_group">
+          <mxGeometry y="80" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="producer_attr_5" value="total_films_produced (derived)" style="whiteSpace=wrap;html=1;container=0;dashed=1;" vertex="1" parent="producer_table_group">
+          <mxGeometry y="100" width="200" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- CREW Table -->
+        <mxCell id="crew_table_title" value="&lt;font face=&quot;Garamond&quot; style=&quot;font-size: 24px;&quot;&gt;CREW&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="50" y="850" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="crew_table_group" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="115" y="885" width="200" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="crew_pk" value="PK: crew_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=1;fillColor=#FFEBEE;" vertex="1" parent="crew_table_group">
+          <mxGeometry width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="crew_attr_1" value="name" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="crew_table_group">
+          <mxGeometry y="20" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="crew_attr_2" value="role" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="crew_table_group">
+          <mxGeometry y="40" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="crew_attr_3" value="dob" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="crew_table_group">
+          <mxGeometry y="60" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="crew_attr_4" value="experience_years" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="crew_table_group">
+          <mxGeometry y="80" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="crew_attr_5" value="department" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="crew_table_group">
+          <mxGeometry y="100" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="crew_fk_1" value="FK: supervisor_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=4;" vertex="1" parent="crew_table_group">
+          <mxGeometry y="120" width="200" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- STUDIO Table -->
+        <mxCell id="studio_table_title" value="&lt;font face=&quot;Garamond&quot; style=&quot;font-size: 24px;&quot;&gt;STUDIO&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="50" y="1050" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="studio_table_group" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="115" y="1085" width="200" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="studio_pk" value="PK: studio_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=1;fillColor=#FFEBEE;" vertex="1" parent="studio_table_group">
+          <mxGeometry width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="studio_attr_1" value="name" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="studio_table_group">
+          <mxGeometry y="20" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="studio_attr_2" value="location" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="studio_table_group">
+          <mxGeometry y="40" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="studio_attr_3" value="established_year" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="studio_table_group">
+          <mxGeometry y="60" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="studio_attr_4" value="capacity" style="whiteSpace=wrap;html=1;container=0;dashed=1;" vertex="1" parent="studio_table_group">
+          <mxGeometry y="80" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="studio_attr_5" value="facilities" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="studio_table_group">
+          <mxGeometry y="100" width="200" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- EQUIPMENT Table -->
+        <mxCell id="equipment_table_title" value="&lt;font face=&quot;Garamond&quot; style=&quot;font-size: 24px;&quot;&gt;EQUIPMENT&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="50" y="1225" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="equipment_table_group" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="115" y="1260" width="200" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="equipment_pk" value="PK: equipment_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=1;fillColor=#FFEBEE;" vertex="1" parent="equipment_table_group">
+          <mxGeometry width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="equipment_attr_1" value="name" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="equipment_table_group">
+          <mxGeometry y="20" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="equipment_attr_2" value="type" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="equipment_table_group">
+          <mxGeometry y="40" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="equipment_attr_3" value="cost" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="equipment_table_group">
+          <mxGeometry y="60" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="equipment_attr_4" value="purchase_date" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="equipment_table_group">
+          <mxGeometry y="80" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="equipment_attr_5" value="condition" style="whiteSpace=wrap;html=1;container=0;dashed=1;" vertex="1" parent="equipment_table_group">
+          <mxGeometry y="100" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="equipment_attr_6" value="availability" style="whiteSpace=wrap;html=1;container=0;dashed=1;" vertex="1" parent="equipment_table_group">
+          <mxGeometry y="120" width="200" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- SHOOTING_LOCATION Table -->
+        <mxCell id="location_table_title" value="&lt;font face=&quot;Garamond&quot; style=&quot;font-size: 24px;&quot;&gt;SHOOTING_LOCATION&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="50" y="1425" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="location_table_group" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="115" y="1460" width="200" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="location_pk" value="PK: location_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=1;fillColor=#FFEBEE;" vertex="1" parent="location_table_group">
+          <mxGeometry width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="location_attr_1" value="name" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="location_table_group">
+          <mxGeometry y="20" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="location_attr_2" value="city" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="location_table_group">
+          <mxGeometry y="40" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="location_attr_3" value="state" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="location_table_group">
+          <mxGeometry y="60" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="location_attr_4" value="country" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="location_table_group">
+          <mxGeometry y="80" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="location_attr_5" value="cost_per_day" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="location_table_group">
+          <mxGeometry y="100" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="location_attr_6" value="area" style="whiteSpace=wrap;html=1;container=0;dashed=1;" vertex="1" parent="location_table_group">
+          <mxGeometry y="120" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="location_attr_7" value="amenities" style="whiteSpace=wrap;html=1;container=0;dashed=1;" vertex="1" parent="location_table_group">
+          <mxGeometry y="140" width="200" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- DISTRIBUTOR Table -->
+        <mxCell id="distributor_table_title" value="&lt;font face=&quot;Garamond&quot; style=&quot;font-size: 24px;&quot;&gt;DISTRIBUTOR&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="50" y="1650" width="150" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="distributor_table_group" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="115" y="1685" width="200" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="distributor_pk" value="PK: distributor_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=1;fillColor=#FFEBEE;" vertex="1" parent="distributor_table_group">
+          <mxGeometry width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="distributor_attr_1" value="name" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="distributor_table_group">
+          <mxGeometry y="20" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="distributor_attr_2" value="region" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="distributor_table_group">
+          <mxGeometry y="40" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="distributor_attr_3" value="market_share" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="distributor_table_group">
+          <mxGeometry y="60" width="200" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- SCENE Table -->
+        <mxCell id="scene_table_title" value="&lt;font face=&quot;Garamond&quot; style=&quot;font-size: 24px;&quot;&gt;SCENE&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="350" y="43" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="scene_table_group" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="415" y="78" width="200" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="scene_pk" value="PK: film_id, scene_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=1;fillColor=#FFEBEE;" vertex="1" parent="scene_table_group">
+          <mxGeometry width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="scene_attr_1" value="location" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="scene_table_group">
+          <mxGeometry y="20" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="scene_attr_2" value="description" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="scene_table_group">
+          <mxGeometry y="40" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="scene_attr_3" value="duration" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="scene_table_group">
+          <mxGeometry y="60" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="scene_fk_1" value="FK: film_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=4;" vertex="1" parent="scene_table_group">
+          <mxGeometry y="80" width="200" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- ROLE Table -->
+        <mxCell id="role_table_title" value="&lt;font face=&quot;Garamond&quot; style=&quot;font-size: 24px;&quot;&gt;ROLE&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="350" y="200" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="role_table_group" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="415" y="235" width="200" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="role_pk" value="PK: actor_id, film_id, role_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=1;fillColor=#FFEBEE;" vertex="1" parent="role_table_group">
+          <mxGeometry width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="role_attr_1" value="character_name" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="role_table_group">
+          <mxGeometry y="20" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="role_attr_2" value="screen_time" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="role_table_group">
+          <mxGeometry y="40" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="role_attr_3" value="importance" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="role_table_group">
+          <mxGeometry y="60" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="role_fk_1" value="FK: actor_id, film_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=4;" vertex="1" parent="role_table_group">
+          <mxGeometry y="80" width="200" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- ACTOR_AWARDS Table (Junction Table) -->
+        <mxCell id="actor_awards_table_title" value="&lt;font face=&quot;Garamond&quot; style=&quot;font-size: 24px;&quot;&gt;ACTOR_AWARDS&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="350" y="375" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="actor_awards_table_group" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="415" y="410" width="200" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="actor_awards_pk" value="PK: actor_id, award_name, award_year" style="whiteSpace=wrap;html=1;container=0;fontStyle=1;fillColor=#FFEBEE;" vertex="1" parent="actor_awards_table_group">
+          <mxGeometry width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="actor_awards_fk_1" value="FK: actor_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=4;" vertex="1" parent="actor_awards_table_group">
+          <mxGeometry y="20" width="200" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- DIRECTOR_AWARDS Table (Junction Table) -->
+        <mxCell id="director_awards_table_title" value="&lt;font face=&quot;Garamond&quot; style=&quot;font-size: 24px;&quot;&gt;DIRECTOR_AWARDS&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="350" y="500" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="director_awards_table_group" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="415" y="535" width="200" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="director_awards_pk" value="PK: director_id, award_name, award_year" style="whiteSpace=wrap;html=1;container=0;fontStyle=1;fillColor=#FFEBEE;" vertex="1" parent="director_awards_table_group">
+          <mxGeometry width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="director_awards_fk_1" value="FK: director_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=4;" vertex="1" parent="director_awards_table_group">
+          <mxGeometry y="20" width="200" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- CREW_AWARDS Table (Junction Table) -->
+        <mxCell id="crew_awards_table_title" value="&lt;font face=&quot;Garamond&quot; style=&quot;font-size: 24px;&quot;&gt;CREW_AWARDS&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="350" y="625" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="crew_awards_table_group" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="415" y="660" width="200" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="crew_awards_pk" value="PK: crew_id, award_name, award_year" style="whiteSpace=wrap;html=1;container=0;fontStyle=1;fillColor=#FFEBEE;" vertex="1" parent="crew_awards_table_group">
+          <mxGeometry width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="crew_awards_fk_1" value="FK: crew_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=4;" vertex="1" parent="crew_awards_table_group">
+          <mxGeometry y="20" width="200" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- PRODUCED_BY Table (Junction Table) -->
+        <mxCell id="produced_by_table_title" value="&lt;font face=&quot;Garamond&quot; style=&quot;font-size: 24px;&quot;&gt;PRODUCED_BY&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="350" y="750" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="produced_by_table_group" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="415" y="785" width="200" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="produced_by_pk" value="PK: film_id, producer_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=1;fillColor=#FFEBEE;" vertex="1" parent="produced_by_table_group">
+          <mxGeometry width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="produced_by_attr_1" value="investment" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="produced_by_table_group">
+          <mxGeometry y="20" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="produced_by_fk_1" value="FK: film_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=4;" vertex="1" parent="produced_by_table_group">
+          <mxGeometry y="40" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="produced_by_fk_2" value="FK: producer_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=4;" vertex="1" parent="produced_by_table_group">
+          <mxGeometry y="60" width="200" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- WORKS_ON Table (Junction Table) -->
+        <mxCell id="works_on_table_title" value="&lt;font face=&quot;Garamond&quot; style=&quot;font-size: 24px;&quot;&gt;WORKS_ON&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="350" y="900" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="works_on_table_group" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="415" y="935" width="200" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="works_on_pk" value="PK: crew_id, film_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=1;fillColor=#FFEBEE;" vertex="1" parent="works_on_table_group">
+          <mxGeometry width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="works_on_attr_1" value="start_date" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="works_on_table_group">
+          <mxGeometry y="20" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="works_on_attr_2" value="end_date" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="works_on_table_group">
+          <mxGeometry y="40" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="works_on_attr_3" value="department" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="works_on_table_group">
+          <mxGeometry y="60" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="works_on_fk_1" value="FK: crew_id, film_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=4;" vertex="1" parent="works_on_table_group">
+          <mxGeometry y="80" width="200" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- USES Table (Junction Table) -->
+        <mxCell id="uses_table_title" value="&lt;font face=&quot;Garamond&quot; style=&quot;font-size: 24px;&quot;&gt;USES&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="350" y="1050" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="uses_table_group" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="415" y="1085" width="200" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="uses_pk" value="PK: film_id, equipment_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=1;fillColor=#FFEBEE;" vertex="1" parent="uses_table_group">
+          <mxGeometry width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="uses_attr_1" value="usage_start" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="uses_table_group">
+          <mxGeometry y="20" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="uses_attr_2" value="usage_end" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="uses_table_group">
+          <mxGeometry y="40" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="uses_fk_1" value="FK: film_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=4;" vertex="1" parent="uses_table_group">
+          <mxGeometry y="60" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="uses_fk_2" value="FK: equipment_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=4;" vertex="1" parent="uses_table_group">
+          <mxGeometry y="80" width="200" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- SHOT_AT Table (Junction Table) -->
+        <mxCell id="shot_at_table_title" value="&lt;font face=&quot;Garamond&quot; style=&quot;font-size: 24px;&quot;&gt;SHOT_AT&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="350" y="1185" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="shot_at_table_group" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="415" y="1220" width="200" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="shot_at_pk" value="PK: film_id, location_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=1;fillColor=#FFEBEE;" vertex="1" parent="shot_at_table_group">
+          <mxGeometry width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="shot_at_attr_1" value="shooting_start" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="shot_at_table_group">
+          <mxGeometry y="20" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="shot_at_attr_2" value="shooting_end" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="shot_at_table_group">
+          <mxGeometry y="40" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="shot_at_attr_3" value="total_cost" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="shot_at_table_group">
+          <mxGeometry y="60" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="shot_at_fk_1" value="FK: film_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=4;" vertex="1" parent="shot_at_table_group">
+          <mxGeometry y="80" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="shot_at_fk_2" value="FK: location_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=4;" vertex="1" parent="shot_at_table_group">
+          <mxGeometry y="100" width="200" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- HOSTS Table (Junction Table) -->
+        <mxCell id="hosts_table_title" value="&lt;font face=&quot;Garamond&quot; style=&quot;font-size: 24px;&quot;&gt;HOSTS&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="350" y="1350" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="hosts_table_group" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="415" y="1385" width="200" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="hosts_pk" value="PK: studio_id, film_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=1;fillColor=#FFEBEE;" vertex="1" parent="hosts_table_group">
+          <mxGeometry width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="hosts_attr_1" value="rental_cost" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="hosts_table_group">
+          <mxGeometry y="20" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="hosts_attr_2" value="rental_start" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="hosts_table_group">
+          <mxGeometry y="40" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="hosts_attr_3" value="rental_end" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="hosts_table_group">
+          <mxGeometry y="60" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="hosts_fk_1" value="FK: studio_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=4;" vertex="1" parent="hosts_table_group">
+          <mxGeometry y="80" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="hosts_fk_2" value="FK: film_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=4;" vertex="1" parent="hosts_table_group">
+          <mxGeometry y="100" width="200" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- DISTRIBUTES Table (Junction Table) -->
+        <mxCell id="distributes_table_title" value="&lt;font face=&quot;Garamond&quot; style=&quot;font-size: 24px;&quot;&gt;DISTRIBUTES&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="350" y="1525" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="distributes_table_group" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="415" y="1560" width="200" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="distributes_pk" value="PK: distributor_id, film_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=1;fillColor=#FFEBEE;" vertex="1" parent="distributes_table_group">
+          <mxGeometry width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="distributes_attr_1" value="distribution_fee" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="distributes_table_group">
+          <mxGeometry y="20" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="distributes_attr_2" value="distribution_date" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="distributes_table_group">
+          <mxGeometry y="40" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="distributes_attr_3" value="territory" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="distributes_table_group">
+          <mxGeometry y="60" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="distributes_fk_1" value="FK: distributor_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=4;" vertex="1" parent="distributes_table_group">
+          <mxGeometry y="80" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="distributes_fk_2" value="FK: film_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=4;" vertex="1" parent="distributes_table_group">
+          <mxGeometry y="100" width="200" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- SCENE_FILMING Table (Ternary) -->
+        <mxCell id="scene_filming_table_title" value="&lt;font face=&quot;Garamond&quot; style=&quot;font-size: 24px;&quot;&gt;SCENE_FILMING&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="350" y="1700" width="190" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="scene_filming_table_group" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="415" y="1735" width="200" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="scene_filming_pk" value="PK: film_id, scene_id, crew_id, equipment_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=1;fillColor=#FFEBEE;" vertex="1" parent="scene_filming_table_group">
+          <mxGeometry width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="scene_filming_attr_1" value="filming_date" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="scene_filming_table_group">
+          <mxGeometry y="20" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="scene_filming_attr_2" value="duration" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="scene_filming_table_group">
+          <mxGeometry y="40" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="scene_filming_attr_3" value="notes" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="scene_filming_table_group">
+          <mxGeometry y="60" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="scene_filming_fk_1" value="FK: film_id, scene_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=4;" vertex="1" parent="scene_filming_table_group">
+          <mxGeometry y="80" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="scene_filming_fk_2" value="FK: crew_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=4;" vertex="1" parent="scene_filming_table_group">
+          <mxGeometry y="100" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="scene_filming_fk_3" value="FK: equipment_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=4;" vertex="1" parent="scene_filming_table_group">
+          <mxGeometry y="120" width="200" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- ACTS_IN Table (Ternary) -->
+        <mxCell id="acts_in_table_title" value="&lt;font face=&quot;Garamond&quot; style=&quot;font-size: 24px;&quot;&gt;ACTS_IN&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="350" y="1850" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="acts_in_table_group" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="415" y="1885" width="200" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="acts_in_pk" value="PK: actor_id, film_id, role_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=1;fillColor=#FFEBEE;" vertex="1" parent="acts_in_table_group">
+          <mxGeometry width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="acts_in_attr_1" value="salary" style="whiteSpace=wrap;html=1;container=0;" vertex="1" parent="acts_in_table_group">
+          <mxGeometry y="20" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="acts_in_fk_1" value="FK: actor_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=4;" vertex="1" parent="acts_in_table_group">
+          <mxGeometry y="40" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="acts_in_fk_2" value="FK: film_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=4;" vertex="1" parent="acts_in_table_group">
+          <mxGeometry y="60" width="200" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="acts_in_fk_3" value="FK: role_id" style="whiteSpace=wrap;html=1;container=0;fontStyle=4;" vertex="1" parent="acts_in_table_group">
+          <mxGeometry y="80" width="200" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- Relationships -->
+        <!-- FILM to DIRECTOR -->
+        <mxCell id="rel_film_director" value="1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="film_table_group" target="director_table_group">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="215" y="278" />
+              <mxPoint x="215" y="475" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- ACTOR to ROLE -->
+        <mxCell id="rel_actor_role" value="1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor_table_group" target="role_table_group">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- FILM to SCENE -->
+        <mxCell id="rel_film_scene" value="1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="film_table_group" target="scene_table_group">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- PRODUCER to PRODUCED_BY -->
+        <mxCell id="rel_producer_producedby" value="M:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="producer_table_group" target="produced_by_table_group">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- FILM to PRODUCED_BY -->
+        <mxCell id="rel_film_producedby" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="film_table_group" target="produced_by_table_group">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="95" y="178" />
+              <mxPoint x="95" y="825" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- CREW to WORKS_ON -->
+        <mxCell id="rel_crew_workson" value="M:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="crew_table_group" target="works_on_table_group">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- FILM to WORKS_ON -->
+        <mxCell id="rel_film_workson" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="film_table_group" target="works_on_table_group">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="95" y="178" />
+              <mxPoint x="95" y="985" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- FILM to USES -->
+        <mxCell id="rel_film_uses" value="M:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="film_table_group" target="uses_table_group">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="95" y="178" />
+              <mxPoint x="95" y="1125" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- EQUIPMENT to USES -->
+        <mxCell id="rel_equipment_uses" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="equipment_table_group" target="uses_table_group">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- FILM to SHOT_AT -->
+        <mxCell id="rel_film_shotat" value="M:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="film_table_group" target="shot_at_table_group">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="95" y="178" />
+              <mxPoint x="95" y="1270" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- LOCATION to SHOT_AT -->
+        <mxCell id="rel_location_shotat" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="location_table_group" target="shot_at_table_group">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- STUDIO to HOSTS -->
+        <mxCell id="rel_studio_hosts" value="M:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="studio_table_group" target="hosts_table_group">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- FILM to HOSTS -->
+        <mxCell id="rel_film_hosts" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="film_table_group" target="hosts_table_group">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="95" y="178" />
+              <mxPoint x="95" y="1435" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- DISTRIBUTOR to DISTRIBUTES -->
+        <mxCell id="rel_distributor_distributes" value="M:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="distributor_table_group" target="distributes_table_group">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- FILM to DISTRIBUTES -->
+        <mxCell id="rel_film_distributes" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="film_table_group" target="distributes_table_group">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="95" y="178" />
+              <mxPoint x="95" y="1590" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- SCENE_FILMING Ternary Connections -->
+        <mxCell id="rel_scene_filming_1" value="Ternary" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="scene_table_group" target="scene_filming_table_group">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel_scene_filming_2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="crew_table_group" target="scene_filming_table_group">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="350" y="955" />
+              <mxPoint x="350" y="1795" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel_scene_filming_3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="equipment_table_group" target="scene_filming_table_group">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="350" y="1330" />
+              <mxPoint x="350" y="1795" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ACTS_IN Ternary Connections -->
+        <mxCell id="rel_acts_in_1" value="Ternary" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor_table_group" target="acts_in_table_group">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="350" y="395" />
+              <mxPoint x="350" y="1935" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel_acts_in_2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="film_table_group" target="acts_in_table_group">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="350" y="178" />
+              <mxPoint x="350" y="1935" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel_acts_in_3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="role_table_group" target="acts_in_table_group">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="350" y="285" />
+              <mxPoint x="350" y="1935" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
