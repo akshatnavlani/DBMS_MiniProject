@@ -1,6 +1,6 @@
-DROP DATABASE IF EXISTS FilmDB;
-CREATE DATABASE FilmDB;
-USE FilmDB;
+DROP DATABASE IF EXISTS filmdb;
+CREATE DATABASE filmdb;
+USE filmdb;
 
 -- =========================
 -- Strong Entities
@@ -323,6 +323,52 @@ CREATE TABLE CREW_AWARD (
     FOREIGN KEY (crew_id) REFERENCES CREW(crew_id) ON DELETE CASCADE
 );
 
+
+-- Create users table
+CREATE TABLE IF NOT EXISTS DB_USERS (
+    user_id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    full_name VARCHAR(120) NOT NULL,
+    email VARCHAR(120) UNIQUE,
+    role ENUM('admin', 'manager', 'viewer') DEFAULT 'viewer',
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by INT,
+    last_login TIMESTAMP NULL,
+    failed_login_attempts INT DEFAULT 0,
+    account_locked BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (created_by) REFERENCES DB_USERS(user_id) ON DELETE SET NULL
+);
+
+-- Create user activity log
+CREATE TABLE USER_ACTIVITY_LOG (
+    log_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    action_type VARCHAR(50) NOT NULL,
+    action_description TEXT,
+    ip_address VARCHAR(45),
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES DB_USERS(user_id) ON DELETE CASCADE
+);
+
+-- Create user permissions table (optional for fine-grained control)
+CREATE TABLE USER_PERMISSIONS (
+    permission_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    module VARCHAR(50) NOT NULL,
+    can_create BOOLEAN DEFAULT FALSE,
+    can_read BOOLEAN DEFAULT TRUE,
+    can_update BOOLEAN DEFAULT FALSE,
+    can_delete BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (user_id) REFERENCES DB_USERS(user_id) ON DELETE CASCADE,
+    UNIQUE KEY (user_id, module)
+);
+
+INSERT INTO DB_USERS (username, password_hash, full_name, email, role, is_active, created_by)
+VALUES ('admin', SHA2('Admin@123', 256), 'System Administrator', 'admin@filmdb.com', 'admin', TRUE, NULL);
+
+
 -- =========================
 -- TRIGGERS
 -- =========================
@@ -470,6 +516,37 @@ BEGIN
     END IF;
 END$$
 DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER tr_log_user_creation
+AFTER INSERT ON DB_USERS
+FOR EACH ROW
+BEGIN
+    INSERT INTO USER_ACTIVITY_LOG (user_id, action_type, action_description)
+    VALUES (NEW.user_id, 'USER_CREATED', CONCAT('User ', NEW.username, ' created with role ', NEW.role));
+END$$
+DELIMITER ;
+
+-- Trigger to log user updates
+DELIMITER $$
+CREATE TRIGGER tr_log_user_update
+AFTER UPDATE ON DB_USERS
+FOR EACH ROW
+BEGIN
+    IF OLD.is_active != NEW.is_active THEN
+        INSERT INTO USER_ACTIVITY_LOG (user_id, action_type, action_description)
+        VALUES (NEW.user_id, 'USER_STATUS_CHANGE', 
+                CONCAT('User ', NEW.username, ' status changed to ', 
+                       IF(NEW.is_active, 'ACTIVE', 'INACTIVE')));
+    END IF;
+    
+    IF OLD.role != NEW.role THEN
+        INSERT INTO USER_ACTIVITY_LOG (user_id, action_type, action_description)
+        VALUES (NEW.user_id, 'USER_ROLE_CHANGE', 
+                CONCAT('User ', NEW.username, ' role changed from ', OLD.role, ' to ', NEW.role));
+    END IF;
+END$$
+DELIMITER ;
+
 
 -- =========================
 -- FUNCTIONS
@@ -633,6 +710,42 @@ BEGIN
     RETURN avg_salary;
 END$$
 DELIMITER ;
+
+-- FUNCTION: Authenticate user
+DELIMITER $$
+
+DROP FUNCTION IF EXISTS fn_authenticate_user$$
+CREATE FUNCTION fn_authenticate_user(
+    p_username VARCHAR(50),
+    p_password VARCHAR(255)
+)
+RETURNS INT
+DETERMINISTIC
+READS SQL DATA
+BEGIN
+    DECLARE v_user_id INT DEFAULT NULL;
+    DECLARE v_is_active BOOLEAN;
+    DECLARE v_is_locked BOOLEAN;
+    
+    SELECT user_id, is_active, account_locked
+    INTO v_user_id, v_is_active, v_is_locked
+    FROM DB_USERS
+    WHERE username = p_username 
+      AND password_hash = SHA2(p_password, 256)
+    LIMIT 1;
+
+    IF v_user_id IS NULL THEN
+        RETURN -1; -- Invalid credentials
+    ELSEIF v_is_locked THEN
+        RETURN -2; -- Account locked
+    ELSEIF NOT v_is_active THEN
+        RETURN -3; -- Account inactive
+    ELSE
+        RETURN v_user_id; -- Successful authentication
+    END IF;
+END$$
+DELIMITER ;
+
 
 -- =========================
 -- STORED PROCEDURES
@@ -993,6 +1106,177 @@ BEGIN
 END$
 DELIMITER ;
 
+-- Procedure to create new user (admin only)
+DELIMITER $$
+CREATE PROCEDURE sp_create_user(
+    IN p_admin_user_id INT,
+    IN p_username VARCHAR(50),
+    IN p_password VARCHAR(255),
+    IN p_full_name VARCHAR(120),
+    IN p_email VARCHAR(120),
+    IN p_role VARCHAR(20)
+)
+BEGIN
+    DECLARE v_admin_role VARCHAR(20);
+    
+    -- Check if creating user is admin
+    SELECT role INTO v_admin_role
+    FROM DB_USERS
+    WHERE user_id = p_admin_user_id;
+    
+    IF v_admin_role != 'admin' THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Only administrators can create users';
+    END IF;
+    
+    -- Create the user
+    INSERT INTO DB_USERS (username, password_hash, full_name, email, role, created_by)
+    VALUES (p_username, SHA2(p_password, 256), p_full_name, p_email, p_role, p_admin_user_id);
+    
+    SELECT LAST_INSERT_ID() as new_user_id, 'User created successfully' as message;
+END$$
+DELIMITER ;
+
+-- Procedure to update user login
+DELIMITER $$
+CREATE PROCEDURE sp_update_login(
+    IN p_user_id INT,
+    IN p_success BOOLEAN,
+    IN p_ip_address VARCHAR(45)
+)
+BEGIN
+    IF p_success THEN
+        UPDATE DB_USERS
+        SET last_login = CURRENT_TIMESTAMP,
+            failed_login_attempts = 0,
+            account_locked = FALSE
+        WHERE user_id = p_user_id;
+        
+        INSERT INTO USER_ACTIVITY_LOG (user_id, action_type, action_description, ip_address)
+        VALUES (p_user_id, 'LOGIN_SUCCESS', 'User logged in successfully', p_ip_address);
+    ELSE
+        UPDATE DB_USERS
+        SET failed_login_attempts = failed_login_attempts + 1,
+            account_locked = IF(failed_login_attempts + 1 >= 5, TRUE, FALSE)
+        WHERE user_id = p_user_id;
+        
+        INSERT INTO USER_ACTIVITY_LOG (user_id, action_type, action_description, ip_address)
+        VALUES (p_user_id, 'LOGIN_FAILED', 'Failed login attempt', p_ip_address);
+    END IF;
+END$$
+DELIMITER ;
+
+-- Procedure to get all users (admin only)
+DELIMITER $$
+CREATE PROCEDURE sp_get_all_users(IN p_admin_user_id INT)
+BEGIN
+    DECLARE v_admin_role VARCHAR(20);
+    
+    SELECT role INTO v_admin_role
+    FROM DB_USERS
+    WHERE user_id = p_admin_user_id;
+    
+    IF v_admin_role != 'admin' THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Only administrators can view all users';
+    END IF;
+    
+    SELECT 
+        user_id,
+        username,
+        full_name,
+        email,
+        role,
+        is_active,
+        created_at,
+        last_login,
+        failed_login_attempts,
+        account_locked
+    FROM DB_USERS
+    ORDER BY created_at DESC;
+END$$
+DELIMITER ;
+
+-- Procedure to update user status
+DELIMITER $$
+CREATE PROCEDURE sp_update_user_status(
+    IN p_admin_user_id INT,
+    IN p_target_user_id INT,
+    IN p_is_active BOOLEAN
+)
+BEGIN
+    DECLARE v_admin_role VARCHAR(20);
+    
+    SELECT role INTO v_admin_role
+    FROM DB_USERS
+    WHERE user_id = p_admin_user_id;
+    
+    IF v_admin_role != 'admin' THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Only administrators can update user status';
+    END IF;
+    
+    UPDATE DB_USERS
+    SET is_active = p_is_active
+    WHERE user_id = p_target_user_id;
+    
+    SELECT 'User status updated successfully' as message;
+END$$
+DELIMITER ;
+
+-- Procedure to delete user (admin only)
+DELIMITER $$
+CREATE PROCEDURE sp_delete_user(
+    IN p_admin_user_id INT,
+    IN p_target_user_id INT
+)
+BEGIN
+    DECLARE v_admin_role VARCHAR(20);
+    DECLARE v_target_role VARCHAR(20);
+    
+    SELECT role INTO v_admin_role
+    FROM DB_USERS
+    WHERE user_id = p_admin_user_id;
+    
+    SELECT role INTO v_target_role
+    FROM DB_USERS
+    WHERE user_id = p_target_user_id;
+    
+    IF v_admin_role != 'admin' THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Only administrators can delete users';
+    END IF;
+    
+    -- Prevent deleting the last admin
+    IF v_target_role = 'admin' THEN
+        IF (SELECT COUNT(*) FROM DB_USERS WHERE role = 'admin' AND is_active = TRUE) <= 1 THEN
+            SIGNAL SQLSTATE '45000' 
+            SET MESSAGE_TEXT = 'Cannot delete the last active administrator';
+        END IF;
+    END IF;
+    
+    DELETE FROM DB_USERS WHERE user_id = p_target_user_id;
+    
+    SELECT 'User deleted successfully' as message;
+END$$
+DELIMITER ;
+
+-- View for user activity summary
+CREATE VIEW view_user_activity_summary AS
+SELECT 
+    u.user_id,
+    u.username,
+    u.full_name,
+    u.role,
+    COUNT(DISTINCT al.log_id) as total_activities,
+    MAX(al.timestamp) as last_activity,
+    SUM(CASE WHEN al.action_type = 'LOGIN_SUCCESS' THEN 1 ELSE 0 END) as successful_logins,
+    SUM(CASE WHEN al.action_type = 'LOGIN_FAILED' THEN 1 ELSE 0 END) as failed_logins
+FROM DB_USERS u
+LEFT JOIN USER_ACTIVITY_LOG al ON u.user_id = al.user_id
+GROUP BY u.user_id, u.username, u.full_name, u.role;
+
+
 -- =========================
 -- Indexes & Views
 -- =========================
@@ -1266,5 +1550,4 @@ INSERT INTO DIRECTOR_AWARD (director_id, award_name, award_year) VALUES
 INSERT INTO CREW_AWARD (crew_id, award_name, award_year) VALUES
 (1,'Best Cinematography',2024),
 (3,'Best Editing',2021);
-
 COMMIT;
