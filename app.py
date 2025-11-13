@@ -12,12 +12,11 @@ st.set_page_config(page_title="Film Database Manager", layout="wide", initial_si
 # Initialize session state
 if 'authenticated' not in st.session_state:
     st.session_state.authenticated = False
-    st.session_state.user_id = None
     st.session_state.username = None
     st.session_state.user_role = None
     st.session_state.full_name = None
     st.session_state.db_host = 'localhost'
-    st.session_state.db_user = 'root'
+    st.session_state.db_user = ''
     st.session_state.db_password = ''
     st.session_state.db_name = 'filmdb'
     st.session_state.db_connected = False
@@ -109,43 +108,65 @@ def call_procedure(procedure_name, params=None):
         return None
 
 def authenticate_user(username, password):
-    """Authenticate user against database"""
-    result = execute_query(
-        "SELECT fn_authenticate_user(%s, %s) as user_id",
-        (username, password),
-        fetch=True
-    )
-    
-    if result and result[0]['user_id']:
-        user_id = result[0]['user_id']
+    """Authenticate user against MySQL database"""
+    try:
+        # Try to connect with the provided credentials
+        conn = mysql.connector.connect(
+            host=st.session_state.db_host,
+            user=username,
+            password=password,
+            database=st.session_state.db_name,
+            autocommit=False
+        )
         
-        if user_id == -1:
-            return None, "Invalid username or password"
-        elif user_id == -2:
-            return None, "Account is locked due to multiple failed login attempts"
-        elif user_id == -3:
-            return None, "Account is inactive"
-        else:
-            # Get user details
-            user_details = execute_query(
-                "SELECT user_id, username, full_name, role FROM DB_USERS WHERE user_id = %s",
-                (user_id,),
-                fetch=True
+        if conn.is_connected():
+            # Connection successful, now get user details from metadata
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute(
+                "SELECT username, full_name, role, is_active FROM USER_METADATA WHERE username = %s",
+                (username,)
             )
+            user_details = cursor.fetchone()
+            cursor.close()
+            
             if user_details:
+                if not user_details['is_active']:
+                    conn.close()
+                    return None, "Account is inactive"
+                
                 # Update login time
-                call_procedure("sp_update_login", [user_id, True, "127.0.0.1"])
-                return user_details[0], None
-    
-    return None, "Authentication failed"
+                cursor = conn.cursor()
+                cursor.callproc("sp_update_login", [username, True, "127.0.0.1"])
+                conn.commit()
+                cursor.close()
+                conn.close()
+                
+                return user_details, None
+            else:
+                conn.close()
+                return None, "User metadata not found"
+        else:
+            return None, "Connection failed"
+            
+    except mysql.connector.Error as e:
+        if e.errno == 1045:  # Access denied
+            return None, "Invalid username or password"
+        elif e.errno == 1049:  # Unknown database
+            return None, "Database not found"
+        else:
+            return None, f"Authentication error: {e.msg if hasattr(e, 'msg') else str(e)}"
+    except Exception as e:
+        return None, f"Unexpected error: {str(e)}"
 
 def logout():
     """Logout user"""
     st.session_state.authenticated = False
-    st.session_state.user_id = None
     st.session_state.username = None
     st.session_state.user_role = None
     st.session_state.full_name = None
+    st.session_state.db_user = ''
+    st.session_state.db_password = ''
+    st.session_state.db_connected = False
     st.rerun()
 
 def check_permission(operation='read'):
@@ -163,67 +184,47 @@ if not st.session_state.authenticated:
     st.title("🎬 Film Database Management System")
     st.markdown("---")
     
-    # Database configuration
-    with st.expander("⚙️ Database Configuration", expanded=not st.session_state.db_connected):
-        col1, col2 = st.columns(2)
-        with col1:
-            st.session_state.db_host = st.text_input("Host", st.session_state.db_host)
-            st.session_state.db_user = st.text_input("DB User", st.session_state.db_user)
-        with col2:
-            st.session_state.db_password = st.text_input("DB Password", st.session_state.db_password, type="password")
-            st.session_state.db_name = st.text_input("Database", st.session_state.db_name)
-        
-        if st.button("Test Connection"):
-            conn = get_connection(
-                st.session_state.db_host,
-                st.session_state.db_user,
-                st.session_state.db_password,
-                st.session_state.db_name
-            )
-            if conn and conn.is_connected():
-                st.session_state.db_connected = True
-                st.success("✓ Connected to database successfully!")
-            else:
-                st.error("❌ Connection failed. Please check your credentials.")
+    st.markdown("### 🔐 Login with MySQL Credentials")
     
-    if st.session_state.db_connected:
-        st.markdown("### 🔐 Login")
-        
-        col1, col2, col3 = st.columns([1, 2, 1])
-        
-        with col2:
-            with st.form("login_form"):
-                username = st.text_input("Username", placeholder="Enter your username")
-                password = st.text_input("Password", type="password", placeholder="Enter your password")
-                submit = st.form_submit_button("Login", use_container_width=True)
-                
-                if submit:
-                    if username and password:
-                        user, error = authenticate_user(username, password)
-                        
-                        if user:
-                            st.session_state.authenticated = True
-                            st.session_state.user_id = user['user_id']
-                            st.session_state.username = user['username']
-                            st.session_state.user_role = user['role']
-                            st.session_state.full_name = user['full_name']
-                            st.success(f"✓ Welcome, {user['full_name']}!")
-                            st.rerun()
-                        else:
-                            st.error(f"❌ {error}")
+    col1, col2, col3 = st.columns([1, 2, 1])
+    
+    with col2:
+        with st.form("login_form"):
+            st.session_state.db_host = st.text_input("Database Host", value="localhost")
+            username = st.text_input("Username", placeholder="Enter your MySQL username")
+            password = st.text_input("Password", type="password", placeholder="Enter your MySQL password")
+            submit = st.form_submit_button("Login", use_container_width=True)
+            
+            if submit:
+                if username and password:
+                    user, error = authenticate_user(username, password)
+                    
+                    if user:
+                        st.session_state.authenticated = True
+                        st.session_state.username = user['username']
+                        st.session_state.user_role = user['role']
+                        st.session_state.full_name = user['full_name']
+                        st.session_state.db_user = username
+                        st.session_state.db_password = password
+                        st.session_state.db_connected = True
+                        st.success(f"✓ Welcome, {user['full_name']}!")
+                        st.rerun()
                     else:
-                        st.warning("Please enter both username and password")
+                        st.error(f"❌ {error}")
+                else:
+                    st.warning("Please enter both username and password")
+        
+        st.info("💡 Default credentials: **admin** / **Admin@123**")
+        
+        with st.expander("ℹ️ User Roles Information"):
+            st.markdown("""
+            **Admin**: Full access including user management and data operations  
+            **Manager**: Can perform CRUD operations on all film data  
+            **Viewer**: Read-only access to all data
             
-            st.info("💡 Default credentials: **admin** / **Admin@123**")
-            
-            with st.expander("ℹ️ User Roles Information"):
-                st.markdown("""
-                **Admin**: Full access including user management  
-                **Manager**: Can perform CRUD operations on all entities  
-                **Viewer**: Read-only access to all data
-                """)
-    else:
-        st.warning("⚠️ Please configure and test database connection first")
+            **Note**: Users must have MySQL accounts created by an administrator.
+            Login with your MySQL username and password.
+            """)
     
     st.stop()
 
@@ -281,7 +282,7 @@ if page == "User Management":
             col1, col2 = st.columns(2)
             
             with col1:
-                new_username = st.text_input("Username*", help="Unique username for login")
+                new_username = st.text_input("Username*", help="MySQL username for login")
                 new_full_name = st.text_input("Full Name*", help="User's full name")
                 new_email = st.text_input("Email*", help="User's email address")
             
@@ -293,8 +294,9 @@ if page == "User Management":
             
             st.markdown("**Role Descriptions:**")
             st.markdown("- **Viewer**: Can only view data, no modifications")
-            st.markdown("- **Manager**: Can create, update, and delete records")
+            st.markdown("- **Manager**: Can create, update, and delete film records")
             st.markdown("- **Admin**: Full system access including user management")
+            st.markdown("**Note**: This will create a MySQL user account visible in MySQL Workbench")
             
             submit = st.form_submit_button("Create User", use_container_width=True)
             
@@ -307,38 +309,27 @@ if page == "User Management":
                     st.error("❌ Password must be at least 8 characters")
                 else:
                     try:
-                        result = call_procedure("sp_create_user", [
-                            st.session_state.user_id,
-                            new_username,
-                            new_password,
-                            new_full_name,
-                            new_email,
-                            new_role
-                        ])
+                        result = call_procedure("sp_create_user", 
+                            [st.session_state.username, new_username, new_password, 
+                             new_full_name, new_email, new_role])
                         
                         if result:
-                            st.success(f"✓ User '{new_username}' created successfully!")
-                            st.balloons()
+                            st.success(f"✓ MySQL user '{new_username}' created successfully!")
+                            st.info(f"User can now login with username: {new_username}")
                     except Exception as e:
-                        if "Only administrators can create users" in str(e):
-                            st.error("❌ Only administrators can create users")
-                        elif "Duplicate entry" in str(e):
-                            st.error("❌ Username or email already exists")
-                        else:
-                            st.error(f"❌ Error creating user: {str(e)}")
+                        st.error(f"❌ Error creating user: {str(e)}")
     
     with tab2:
         st.subheader("All Users")
         
         try:
-            users = call_procedure("sp_get_all_users", [st.session_state.user_id])
+            users = call_procedure("sp_get_all_users", [st.session_state.username])
             
             if users:
                 df = pd.DataFrame(users)
                 
                 # Format the dataframe
                 df['is_active'] = df['is_active'].apply(lambda x: '✅ Active' if x else '❌ Inactive')
-                df['account_locked'] = df['account_locked'].apply(lambda x: '🔒 Locked' if x else '🔓 Unlocked')
                 df['last_login'] = pd.to_datetime(df['last_login']).dt.strftime('%Y-%m-%d %H:%M')
                 df['created_at'] = pd.to_datetime(df['created_at']).dt.strftime('%Y-%m-%d %H:%M')
                 
@@ -395,7 +386,7 @@ if page == "User Management":
         st.subheader("Manage User Status")
         
         users = execute_query(
-            "SELECT user_id, username, full_name, role, is_active FROM DB_USERS WHERE username != 'admin' ORDER BY full_name",
+            "SELECT username, full_name, role, is_active FROM USER_METADATA WHERE username != 'admin' ORDER BY full_name",
             fetch=True
         )
         
@@ -424,8 +415,8 @@ if page == "User Management":
                     if st.button("Update Status"):
                         try:
                             result = call_procedure("sp_update_user_status", [
-                                st.session_state.user_id,
-                                user_select['user_id'],
+                                st.session_state.username,
+                                user_select['username'],
                                 new_status
                             ])
                             if result:
@@ -436,18 +427,19 @@ if page == "User Management":
                 
                 with col2:
                     st.markdown("#### Delete User")
-                    st.warning("⚠️ This action cannot be undone!")
+                    st.warning("⚠️ This action will delete the MySQL user account!")
+                    st.info(f"Deleting: **{user_select['username']}**")
                     
                     confirm = st.checkbox("I confirm I want to delete this user")
                     
                     if st.button("Delete User", disabled=not confirm, type="primary"):
                         try:
                             result = call_procedure("sp_delete_user", [
-                                st.session_state.user_id,
-                                user_select['user_id']
+                                st.session_state.username,
+                                user_select['username']
                             ])
                             if result:
-                                st.success("✓ User deleted successfully!")
+                                st.success("✓ MySQL user deleted successfully!")
                                 st.rerun()
                         except Exception as e:
                             if "Cannot delete the last active administrator" in str(e):
@@ -1307,10 +1299,9 @@ elif page == "Audit & Logs":
     with tab4:
         st.subheader("User Activity Log")
         user_activity = execute_query(
-            """SELECT al.log_id, u.username, u.full_name, al.action_type, 
+            """SELECT al.log_id, al.username, al.action_type, 
                       al.action_description, al.timestamp
                FROM USER_ACTIVITY_LOG al
-               JOIN DB_USERS u ON al.user_id = u.user_id
                ORDER BY al.timestamp DESC LIMIT 100""",
             fetch=True
         )

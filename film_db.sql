@@ -324,49 +324,53 @@ CREATE TABLE CREW_AWARD (
 );
 
 
--- Create users table
-CREATE TABLE IF NOT EXISTS DB_USERS (
-    user_id INT PRIMARY KEY AUTO_INCREMENT,
-    username VARCHAR(50) NOT NULL UNIQUE,
-    password_hash VARCHAR(255) NOT NULL,
+-- Create user metadata table (for storing additional user info)
+CREATE TABLE IF NOT EXISTS USER_METADATA (
+    username VARCHAR(50) PRIMARY KEY,
     full_name VARCHAR(120) NOT NULL,
     email VARCHAR(120) UNIQUE,
     role ENUM('admin', 'manager', 'viewer') DEFAULT 'viewer',
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    created_by INT,
-    last_login TIMESTAMP NULL,
-    failed_login_attempts INT DEFAULT 0,
-    account_locked BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (created_by) REFERENCES DB_USERS(user_id) ON DELETE SET NULL
+    created_by VARCHAR(50),
+    last_login TIMESTAMP NULL
 );
 
 -- Create user activity log
 CREATE TABLE USER_ACTIVITY_LOG (
     log_id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
+    username VARCHAR(50) NOT NULL,
     action_type VARCHAR(50) NOT NULL,
     action_description TEXT,
     ip_address VARCHAR(45),
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES DB_USERS(user_id) ON DELETE CASCADE
+    INDEX idx_username (username)
 );
 
--- Create user permissions table (optional for fine-grained control)
-CREATE TABLE USER_PERMISSIONS (
-    permission_id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    module VARCHAR(50) NOT NULL,
-    can_create BOOLEAN DEFAULT FALSE,
-    can_read BOOLEAN DEFAULT TRUE,
-    can_update BOOLEAN DEFAULT FALSE,
-    can_delete BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (user_id) REFERENCES DB_USERS(user_id) ON DELETE CASCADE,
-    UNIQUE KEY (user_id, module)
-);
+-- Create default admin MySQL user and metadata
+-- Note: Run these commands with root privileges
 
-INSERT INTO DB_USERS (username, password_hash, full_name, email, role, is_active, created_by)
-VALUES ('admin', SHA2('Admin@123', 256), 'System Administrator', 'admin@filmdb.com', 'admin', TRUE, NULL);
+-- Drop users if they exist
+DROP USER IF EXISTS 'admin'@'localhost';
+DROP USER IF EXISTS 'admin'@'%';
+
+-- Create admin user
+CREATE USER 'admin'@'localhost' IDENTIFIED BY 'Admin@123';
+CREATE USER 'admin'@'%' IDENTIFIED BY 'Admin@123';
+
+-- Grant all privileges to admin
+GRANT ALL PRIVILEGES ON filmdb.* TO 'admin'@'localhost' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON filmdb.* TO 'admin'@'%' WITH GRANT OPTION;
+
+-- Grant user management privileges to admin
+GRANT CREATE USER ON *.* TO 'admin'@'localhost';
+GRANT CREATE USER ON *.* TO 'admin'@'%';
+
+FLUSH PRIVILEGES;
+
+-- Insert admin metadata
+INSERT INTO USER_METADATA (username, full_name, email, role, is_active, created_by)
+VALUES ('admin', 'System Administrator', 'admin@filmdb.com', 'admin', TRUE, NULL);
 
 
 -- =========================
@@ -518,30 +522,30 @@ END$$
 DELIMITER ;
 DELIMITER $$
 CREATE TRIGGER tr_log_user_creation
-AFTER INSERT ON DB_USERS
+AFTER INSERT ON USER_METADATA
 FOR EACH ROW
 BEGIN
-    INSERT INTO USER_ACTIVITY_LOG (user_id, action_type, action_description)
-    VALUES (NEW.user_id, 'USER_CREATED', CONCAT('User ', NEW.username, ' created with role ', NEW.role));
+    INSERT INTO USER_ACTIVITY_LOG (username, action_type, action_description)
+    VALUES (NEW.username, 'USER_CREATED', CONCAT('User ', NEW.username, ' created with role ', NEW.role));
 END$$
 DELIMITER ;
 
 -- Trigger to log user updates
 DELIMITER $$
 CREATE TRIGGER tr_log_user_update
-AFTER UPDATE ON DB_USERS
+AFTER UPDATE ON USER_METADATA
 FOR EACH ROW
 BEGIN
     IF OLD.is_active != NEW.is_active THEN
-        INSERT INTO USER_ACTIVITY_LOG (user_id, action_type, action_description)
-        VALUES (NEW.user_id, 'USER_STATUS_CHANGE', 
+        INSERT INTO USER_ACTIVITY_LOG (username, action_type, action_description)
+        VALUES (NEW.username, 'USER_STATUS_CHANGE', 
                 CONCAT('User ', NEW.username, ' status changed to ', 
                        IF(NEW.is_active, 'ACTIVE', 'INACTIVE')));
     END IF;
     
     IF OLD.role != NEW.role THEN
-        INSERT INTO USER_ACTIVITY_LOG (user_id, action_type, action_description)
-        VALUES (NEW.user_id, 'USER_ROLE_CHANGE', 
+        INSERT INTO USER_ACTIVITY_LOG (username, action_type, action_description)
+        VALUES (NEW.username, 'USER_ROLE_CHANGE', 
                 CONCAT('User ', NEW.username, ' role changed from ', OLD.role, ' to ', NEW.role));
     END IF;
 END$$
@@ -711,37 +715,33 @@ BEGIN
 END$$
 DELIMITER ;
 
--- FUNCTION: Authenticate user
+-- FUNCTION: Authenticate user (check if MySQL user exists and is active)
 DELIMITER $$
 
 DROP FUNCTION IF EXISTS fn_authenticate_user$$
 CREATE FUNCTION fn_authenticate_user(
-    p_username VARCHAR(50),
-    p_password VARCHAR(255)
+    p_username VARCHAR(50)
 )
 RETURNS INT
 DETERMINISTIC
 READS SQL DATA
 BEGIN
-    DECLARE v_user_id INT DEFAULT NULL;
     DECLARE v_is_active BOOLEAN;
-    DECLARE v_is_locked BOOLEAN;
+    DECLARE v_role VARCHAR(20);
     
-    SELECT user_id, is_active, account_locked
-    INTO v_user_id, v_is_active, v_is_locked
-    FROM DB_USERS
-    WHERE username = p_username 
-      AND password_hash = SHA2(p_password, 256)
+    -- Check if user exists in metadata and is active
+    SELECT is_active, role
+    INTO v_is_active, v_role
+    FROM USER_METADATA
+    WHERE username = p_username
     LIMIT 1;
 
-    IF v_user_id IS NULL THEN
-        RETURN -1; -- Invalid credentials
-    ELSEIF v_is_locked THEN
-        RETURN -2; -- Account locked
+    IF v_role IS NULL THEN
+        RETURN -1; -- User not found in metadata
     ELSEIF NOT v_is_active THEN
         RETURN -3; -- Account inactive
     ELSE
-        RETURN v_user_id; -- Successful authentication
+        RETURN 1; -- Successful authentication
     END IF;
 END$$
 DELIMITER ;
@@ -1106,10 +1106,10 @@ BEGIN
 END$
 DELIMITER ;
 
--- Procedure to create new user (admin only)
+-- Procedure to create new user (admin only) - Creates MySQL user and metadata
 DELIMITER $$
 CREATE PROCEDURE sp_create_user(
-    IN p_admin_user_id INT,
+    IN p_admin_username VARCHAR(50),
     IN p_username VARCHAR(50),
     IN p_password VARCHAR(255),
     IN p_full_name VARCHAR(120),
@@ -1118,63 +1118,125 @@ CREATE PROCEDURE sp_create_user(
 )
 BEGIN
     DECLARE v_admin_role VARCHAR(20);
+    DECLARE v_sql_stmt VARCHAR(500);
     
     -- Check if creating user is admin
     SELECT role INTO v_admin_role
-    FROM DB_USERS
-    WHERE user_id = p_admin_user_id;
+    FROM USER_METADATA
+    WHERE username = p_admin_username;
     
     IF v_admin_role != 'admin' THEN
         SIGNAL SQLSTATE '45000' 
         SET MESSAGE_TEXT = 'Only administrators can create users';
     END IF;
     
-    -- Create the user
-    INSERT INTO DB_USERS (username, password_hash, full_name, email, role, created_by)
-    VALUES (p_username, SHA2(p_password, 256), p_full_name, p_email, p_role, p_admin_user_id);
+    -- Check if user already exists
+    IF EXISTS (SELECT 1 FROM USER_METADATA WHERE username = p_username) THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'User already exists';
+    END IF;
     
-    SELECT LAST_INSERT_ID() as new_user_id, 'User created successfully' as message;
+    -- Create MySQL user for localhost
+    SET @sql_create_local = CONCAT('CREATE USER ''', p_username, '''@''localhost'' IDENTIFIED BY ''', p_password, '''');
+    PREPARE stmt FROM @sql_create_local;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+    
+    -- Create MySQL user for remote access
+    SET @sql_create_remote = CONCAT('CREATE USER ''', p_username, '''@''%'' IDENTIFIED BY ''', p_password, '''');
+    PREPARE stmt FROM @sql_create_remote;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+    
+    -- Grant privileges based on role
+    IF p_role = 'admin' THEN
+        -- Admin gets all privileges including user management
+        SET @sql_grant_local = CONCAT('GRANT ALL PRIVILEGES ON filmdb.* TO ''', p_username, '''@''localhost'' WITH GRANT OPTION');
+        PREPARE stmt FROM @sql_grant_local;
+        EXECUTE stmt;
+        DEALLOCATE PREPARE stmt;
+        
+        SET @sql_grant_remote = CONCAT('GRANT ALL PRIVILEGES ON filmdb.* TO ''', p_username, '''@''%'' WITH GRANT OPTION');
+        PREPARE stmt FROM @sql_grant_remote;
+        EXECUTE stmt;
+        DEALLOCATE PREPARE stmt;
+        
+        SET @sql_grant_create_user_local = CONCAT('GRANT CREATE USER ON *.* TO ''', p_username, '''@''localhost''');
+        PREPARE stmt FROM @sql_grant_create_user_local;
+        EXECUTE stmt;
+        DEALLOCATE PREPARE stmt;
+        
+        SET @sql_grant_create_user_remote = CONCAT('GRANT CREATE USER ON *.* TO ''', p_username, '''@''%''');
+        PREPARE stmt FROM @sql_grant_create_user_remote;
+        EXECUTE stmt;
+        DEALLOCATE PREPARE stmt;
+        
+    ELSEIF p_role = 'manager' THEN
+        -- Manager can SELECT, INSERT, UPDATE, DELETE, EXECUTE
+        SET @sql_grant_local = CONCAT('GRANT SELECT, INSERT, UPDATE, DELETE, EXECUTE ON filmdb.* TO ''', p_username, '''@''localhost''');
+        PREPARE stmt FROM @sql_grant_local;
+        EXECUTE stmt;
+        DEALLOCATE PREPARE stmt;
+        
+        SET @sql_grant_remote = CONCAT('GRANT SELECT, INSERT, UPDATE, DELETE, EXECUTE ON filmdb.* TO ''', p_username, '''@''%''');
+        PREPARE stmt FROM @sql_grant_remote;
+        EXECUTE stmt;
+        DEALLOCATE PREPARE stmt;
+        
+    ELSE -- viewer
+        -- Viewer can only SELECT and EXECUTE (for read-only operations)
+        SET @sql_grant_local = CONCAT('GRANT SELECT, EXECUTE ON filmdb.* TO ''', p_username, '''@''localhost''');
+        PREPARE stmt FROM @sql_grant_local;
+        EXECUTE stmt;
+        DEALLOCATE PREPARE stmt;
+        
+        SET @sql_grant_remote = CONCAT('GRANT SELECT, EXECUTE ON filmdb.* TO ''', p_username, '''@''%''');
+        PREPARE stmt FROM @sql_grant_remote;
+        EXECUTE stmt;
+        DEALLOCATE PREPARE stmt;
+    END IF;
+    
+    FLUSH PRIVILEGES;
+    
+    -- Insert metadata
+    INSERT INTO USER_METADATA (username, full_name, email, role, created_by)
+    VALUES (p_username, p_full_name, p_email, p_role, p_admin_username);
+    
+    SELECT CONCAT('User ', p_username, ' created successfully') as message;
 END$$
 DELIMITER ;
 
 -- Procedure to update user login
 DELIMITER $$
 CREATE PROCEDURE sp_update_login(
-    IN p_user_id INT,
+    IN p_username VARCHAR(50),
     IN p_success BOOLEAN,
     IN p_ip_address VARCHAR(45)
 )
 BEGIN
     IF p_success THEN
-        UPDATE DB_USERS
-        SET last_login = CURRENT_TIMESTAMP,
-            failed_login_attempts = 0,
-            account_locked = FALSE
-        WHERE user_id = p_user_id;
+        UPDATE USER_METADATA
+        SET last_login = CURRENT_TIMESTAMP
+        WHERE username = p_username;
         
-        INSERT INTO USER_ACTIVITY_LOG (user_id, action_type, action_description, ip_address)
-        VALUES (p_user_id, 'LOGIN_SUCCESS', 'User logged in successfully', p_ip_address);
+        INSERT INTO USER_ACTIVITY_LOG (username, action_type, action_description, ip_address)
+        VALUES (p_username, 'LOGIN_SUCCESS', 'User logged in successfully', p_ip_address);
     ELSE
-        UPDATE DB_USERS
-        SET failed_login_attempts = failed_login_attempts + 1,
-            account_locked = IF(failed_login_attempts + 1 >= 5, TRUE, FALSE)
-        WHERE user_id = p_user_id;
-        
-        INSERT INTO USER_ACTIVITY_LOG (user_id, action_type, action_description, ip_address)
-        VALUES (p_user_id, 'LOGIN_FAILED', 'Failed login attempt', p_ip_address);
+        INSERT INTO USER_ACTIVITY_LOG (username, action_type, action_description, ip_address)
+        VALUES (p_username, 'LOGIN_FAILED', 'Failed login attempt', p_ip_address);
     END IF;
 END$$
 DELIMITER ;
 
 -- Procedure to get all users (admin only)
 DELIMITER $$
-CREATE PROCEDURE sp_get_all_users(IN p_admin_user_id INT)
+CREATE PROCEDURE sp_get_all_users(IN p_admin_username VARCHAR(50))
 BEGIN
     DECLARE v_admin_role VARCHAR(20);
     
     SELECT role INTO v_admin_role
-    FROM DB_USERS
-    WHERE user_id = p_admin_user_id;
+    FROM USER_METADATA
+    WHERE username = p_admin_username;
     
     IF v_admin_role != 'admin' THEN
         SIGNAL SQLSTATE '45000' 
@@ -1182,7 +1244,6 @@ BEGIN
     END IF;
     
     SELECT 
-        user_id,
         username,
         full_name,
         email,
@@ -1190,9 +1251,8 @@ BEGIN
         is_active,
         created_at,
         last_login,
-        failed_login_attempts,
-        account_locked
-    FROM DB_USERS
+        created_by
+    FROM USER_METADATA
     ORDER BY created_at DESC;
 END$$
 DELIMITER ;
@@ -1200,47 +1260,47 @@ DELIMITER ;
 -- Procedure to update user status
 DELIMITER $$
 CREATE PROCEDURE sp_update_user_status(
-    IN p_admin_user_id INT,
-    IN p_target_user_id INT,
+    IN p_admin_username VARCHAR(50),
+    IN p_target_username VARCHAR(50),
     IN p_is_active BOOLEAN
 )
 BEGIN
     DECLARE v_admin_role VARCHAR(20);
     
     SELECT role INTO v_admin_role
-    FROM DB_USERS
-    WHERE user_id = p_admin_user_id;
+    FROM USER_METADATA
+    WHERE username = p_admin_username;
     
     IF v_admin_role != 'admin' THEN
         SIGNAL SQLSTATE '45000' 
         SET MESSAGE_TEXT = 'Only administrators can update user status';
     END IF;
     
-    UPDATE DB_USERS
+    UPDATE USER_METADATA
     SET is_active = p_is_active
-    WHERE user_id = p_target_user_id;
+    WHERE username = p_target_username;
     
     SELECT 'User status updated successfully' as message;
 END$$
 DELIMITER ;
 
--- Procedure to delete user (admin only)
+-- Procedure to delete user (admin only) - Drops MySQL user and removes metadata
 DELIMITER $$
 CREATE PROCEDURE sp_delete_user(
-    IN p_admin_user_id INT,
-    IN p_target_user_id INT
+    IN p_admin_username VARCHAR(50),
+    IN p_target_username VARCHAR(50)
 )
 BEGIN
     DECLARE v_admin_role VARCHAR(20);
     DECLARE v_target_role VARCHAR(20);
     
     SELECT role INTO v_admin_role
-    FROM DB_USERS
-    WHERE user_id = p_admin_user_id;
+    FROM USER_METADATA
+    WHERE username = p_admin_username;
     
     SELECT role INTO v_target_role
-    FROM DB_USERS
-    WHERE user_id = p_target_user_id;
+    FROM USER_METADATA
+    WHERE username = p_target_username;
     
     IF v_admin_role != 'admin' THEN
         SIGNAL SQLSTATE '45000' 
@@ -1249,13 +1309,27 @@ BEGIN
     
     -- Prevent deleting the last admin
     IF v_target_role = 'admin' THEN
-        IF (SELECT COUNT(*) FROM DB_USERS WHERE role = 'admin' AND is_active = TRUE) <= 1 THEN
+        IF (SELECT COUNT(*) FROM USER_METADATA WHERE role = 'admin' AND is_active = TRUE) <= 1 THEN
             SIGNAL SQLSTATE '45000' 
             SET MESSAGE_TEXT = 'Cannot delete the last active administrator';
         END IF;
     END IF;
     
-    DELETE FROM DB_USERS WHERE user_id = p_target_user_id;
+    -- Drop MySQL user
+    SET @sql_drop_local = CONCAT('DROP USER IF EXISTS ''', p_target_username, '''@''localhost''');
+    PREPARE stmt FROM @sql_drop_local;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+    
+    SET @sql_drop_remote = CONCAT('DROP USER IF EXISTS ''', p_target_username, '''@''%''');
+    PREPARE stmt FROM @sql_drop_remote;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+    
+    FLUSH PRIVILEGES;
+    
+    -- Delete metadata
+    DELETE FROM USER_METADATA WHERE username = p_target_username;
     
     SELECT 'User deleted successfully' as message;
 END$$
@@ -1264,7 +1338,6 @@ DELIMITER ;
 -- View for user activity summary
 CREATE VIEW view_user_activity_summary AS
 SELECT 
-    u.user_id,
     u.username,
     u.full_name,
     u.role,
@@ -1272,9 +1345,9 @@ SELECT
     MAX(al.timestamp) as last_activity,
     SUM(CASE WHEN al.action_type = 'LOGIN_SUCCESS' THEN 1 ELSE 0 END) as successful_logins,
     SUM(CASE WHEN al.action_type = 'LOGIN_FAILED' THEN 1 ELSE 0 END) as failed_logins
-FROM DB_USERS u
-LEFT JOIN USER_ACTIVITY_LOG al ON u.user_id = al.user_id
-GROUP BY u.user_id, u.username, u.full_name, u.role;
+FROM USER_METADATA u
+LEFT JOIN USER_ACTIVITY_LOG al ON u.username = al.username
+GROUP BY u.username, u.full_name, u.role;
 
 
 -- =========================
